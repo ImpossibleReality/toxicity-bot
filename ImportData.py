@@ -7,14 +7,18 @@ import pandas as pd
 from datasets import load_dataset
 
 
+from datasets import load_dataset
+import pandas as pd
+
+
 dataset = load_dataset("hate_speech18")
-huggingFaceData1 = pd.read_csv(dataset, usecols=[0,4])
+
+data2 = pd.DataFrame(dataset['train'])
+data2 = data2.drop('user_id', axis=1)
+data2 = data2.drop('subforum_id', axis=1)
+data2 = data2.drop("num_contexts", axis=1)
 
 
-kaggleData2 = pd.read_excel("data/labeled_data.xls",sheetname="labeled_data",usecols=[5,6])
-
-for i in df.iterrows():
-  identifierColumn = pd.DataFrame(kaggleData2, index
 
 
 
@@ -28,5 +32,5 @@ for i in df.iterrows():
 
 
 #print first 5 lines of the data
-huggingFaceData1.head()
+data2.head()
 
