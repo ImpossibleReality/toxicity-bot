@@ -52,7 +52,7 @@ def clean_text(text):
             text = re.sub(r[0], r[1], text)
 
     # Remove all non-alphanumeric characters
-    text = re.sub(r'[^a-zA-Z0-9\s]', ' ', text)
+    text = re.sub(r'[^a-zA-Z\s]', ' ', text)
 
     # Replace common contractions with full words
     text = re.sub(r'\bdon ?t\b', 'do not', text)
