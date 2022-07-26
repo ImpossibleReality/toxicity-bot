@@ -11,10 +11,10 @@ dataset = load_dataset("hate_speech18")
 huggingFaceData1 = pd.read_csv(dataset, usecols=[0,4])
 
 
+kaggleData2 = pd.read_excel("data/labeled_data.xls",sheetname="labeled_data",usecols=[5,6])
 
-
-
-kagglaData1 = pd.read_csv("https://www.kaggle.com/datasets/mrmorj/hate-speech-and-offensive-language-dataset/
+for i in df.iterrows():
+  identifierColumn = pd.DataFrame(kaggleData2, index
 
 
 
