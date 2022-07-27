@@ -1,21 +1,17 @@
 import pandas as pd
 import numpy as np
-import numpy.typing as npt
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.preprocessing import OneHotEncoder
 from tqdm import tqdm
 from numba import njit
 
 
 @njit
-def sigmoid(x, w, b=0):
-    cow = w * (x + b)
-    for i in range(len(cow)):
-        frog = cow[i]
-        if frog < 0:
-            return np.exp(frog) / (1 + np.exp(frog))
-        else:
-            return 1 / (1 + np.exp(-frog))
+def sigmoid(x, w, bias=0):
+    # sigmoid(b + xw1 +)
+    a = np.append(1., x)
+    b = np.append(bias, w)
+    r = np.dot(b, a)
+    return 1 / (1 + np.exp(-r))
 
 
 @njit
@@ -27,13 +23,14 @@ def update_parameters(X, Y, w, b, learning_rate: int):
 
     # ROHAN'S MATH
     for i in range(n):
-        dl_dw += X[i] * (Y[i] - sigmoid(X[i], w))
-        dl_db += sigmoid(w, X[i], b) - Y[i]
+        dl_dw += X[i] * (sigmoid(X[i], w) - Y[i])
+        dl_db += sigmoid(X[0], w, b) - Y[0]
 
-    w += learning_rate * dl_dw
-    b += learning_rate * dl_db
+    w -= learning_rate * dl_dw
+    b -= learning_rate * dl_db / n
 
     return w, b
+
 
 @njit
 def loss(X, Y, w, b):
@@ -50,13 +47,12 @@ class LogisticModel:
 
     def __init__(self, learning_rate, epochs, cutoff):
         self.b = 0
-        self.w = np.zeros(1)
+        self.w = None
         self.learningRate = learning_rate
         self.epochs = epochs
         self.cutoff = cutoff
 
     def train(self, X, Y):
-
         self.w = np.zeros(len(X[0]))
 
         for _ in tqdm(range(self.epochs)):
@@ -78,15 +74,18 @@ y = data['class']
 count_vectorizer = CountVectorizer(stop_words='english', min_df=0.0001, binary=True)
 x = count_vectorizer.fit_transform(texts)
 
-print('Start training', len(count_vectorizer.get_feature_names_out()))
-model = LogisticModel(2, 20, 0.5)
+print('Start training', count_vectorizer.get_feature_names_out())
+model = LogisticModel(2, 10, 0.5)
+# x is a 2d sparse array from scipy.sparse
+# x: [
+#   [00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+#
+#
+#     ]
 model.train(x.toarray(), np.array(y))
 
-x2 = count_vectorizer.transform(["You stupid motherfucker"])
-print(model.pred(x2.toarray()[0]))
-
-x2 = count_vectorizer.transform(["Hello"])
-print(model.pred(x2.toarray()[0]))
-
-x2 = count_vectorizer.transform(["I am stupid"])
-print(model.pred(x2.toarray()[0]))
+ip = " "
+while ip != "":
+    ip = input("> ")
+    x2 = count_vectorizer.transform([ip])
+    print(round(model.pred(x2.toarray()[0]), 10))
