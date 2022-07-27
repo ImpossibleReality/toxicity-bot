@@ -1,38 +1,39 @@
 import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
+#from numba import jit
 from tqdm import tqdm
-from numba import njit
 
 
-@njit
+#@jit
 def sigmoid(x, w, bias=0):
-    # sigmoid(b + xw1 +)
-    a = np.append(1., x)
-    b = np.append(bias, w)
-    r = np.dot(b, a)
-    return 1 / (1 + np.exp(-r))
+    # sigmoid(b + x1w1 + x2w2 + ...)
+    r = x.dot(w)
+    return 1 / (1 + np.exp(-r - bias))
 
 
-@njit
+#@jit
 def update_parameters(X, Y, w, b, learning_rate: int):
-    n = len(X)
-
-    dl_dw = np.zeros(len(X[0]))
+    n = X.get_shape()[0]
+    
+    dl_dw = np.zeros((X.get_shape()[1], 1))
     dl_db = 0
-
+    
     # ROHAN'S MATH
     for i in range(n):
-        dl_dw += X[i] * (sigmoid(X[i], w) - Y[i])
-        dl_db += sigmoid(X[0], w, b) - Y[0]
+        xi = X.getrow(i).toarray()
 
+        dl_dw += np.transpose(np.multiply(xi, (sigmoid(xi, w) - Y[i])))
+        dl_db += sigmoid(xi, w, b) - Y[i]
+   
+   
     w -= learning_rate * dl_dw
     b -= learning_rate * dl_db / n
 
     return w, b
 
 
-@njit
+#@jit
 def loss(X, Y, w, b):
     ls = 0
     for i in range(X.shape[0]):
@@ -53,15 +54,17 @@ class LogisticModel:
         self.cutoff = cutoff
 
     def train(self, X, Y):
-        self.w = np.zeros(len(X[0]))
+        self.w = np.zeros((X.get_shape()[1], 1))
 
         for _ in tqdm(range(self.epochs)):
             self.w, self.b = update_parameters(X, Y, self.w, self.b, self.learningRate)
+        
         return self
 
     def pred(self, testX):
         print(testX, self.w, self.b)
         return sigmoid(testX, self.w, self.b)
+
 
 
 data = pd.read_csv('data/cleaned_data.csv')
@@ -74,7 +77,9 @@ y = data['class']
 count_vectorizer = CountVectorizer(stop_words='english', min_df=0.0001, binary=True)
 x = count_vectorizer.fit_transform(texts)
 
-print('Start training', count_vectorizer.get_feature_names_out())
+print(x.getrow(0))
+
+print('Start training')
 model = LogisticModel(2, 10, 0.5)
 # x is a 2d sparse array from scipy.sparse
 # x: [
@@ -82,7 +87,7 @@ model = LogisticModel(2, 10, 0.5)
 #
 #
 #     ]
-model.train(x.toarray(), np.array(y))
+model.train(x, np.array(y))
 
 ip = " "
 while ip != "":
