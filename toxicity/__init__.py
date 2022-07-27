@@ -70,5 +70,4 @@ class LogisticModel:
         return self
 
     def pred(self, testX):
-        print(testX, self.w, self.b)
         return sigmoid(testX, self.w, self.b)[0][0]
