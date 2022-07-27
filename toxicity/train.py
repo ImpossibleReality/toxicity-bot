@@ -7,13 +7,18 @@ from toxicity import LogisticModel
 from sklearn.model_selection import train_test_split
 import joblib
 
+# Default model to train if input is empty string
 DEFAULT_TRAIN_SENSITIVITY = ["loose"]
+# Default epochs if input is empty string
 DEFAULT_EPOCHS = 1000000
+# Default learning rate if input is empty string
 DEFAULT_LR = 0.01
+# How many epochs it takes to print the loss
+LOSS_PRINT_INTERVAL = 300000
 
 
 sensitivities=DEFAULT_TRAIN_SENSITIVITY
-print("Enter sensitivites to train (ie loose, moderate, strict)")
+print("Enter sensitivites to train (ie loose, moderate, strict) separated by comma")
 ip = input("> ")
 if ip != "":
     sensitivities = ip.replace(" ", "").split(",")
@@ -33,7 +38,7 @@ if ip != "":
 for s in sensitivities:
     print("Loading data for: " + s)
     data = pd.read_csv(os.path.join("../data/datasets/cleaned/", s + ".csv"))
-    train, test = train_test_split(data, test_size=0.2)
+    train, test = train_test_split(data, test_size=0.2, random_state=5)
 
     train_x = train['text'].astype(str)
     test_x = test['text'].astype(str)
@@ -52,8 +57,12 @@ for s in sensitivities:
     test_x = count_vectorizer.transform(test_x)
 
     print('Starting training for: ' + s)
+    print()
 
-    # Loss on test data: -0.307
     model = LogisticModel(lr, epochs, 0.5)
-    model.train(train_x, np.array(train_y))
+    model.train(train_x, np.array(train_y), loss_interval=LOSS_PRINT_INTERVAL)
     joblib.dump(model, os.path.join("../data/model/", s + "/", "model.joblib"))
+
+    print("Predicting test loss for " + s)
+    print("Test loss: " + str(model.loss(test_x, np.array(test_y))))
+    print("----------------\n")
