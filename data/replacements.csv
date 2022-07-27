@@ -1,0 +1,31 @@
+initial,replacement,isword,regex
+#,#,#, WARNING: THIS FILE CONTAINS NSFW CONTENT
+#,#,#, USER DISCRETION ADVISED
+#,#,#, this file contains common replacements to standardize the different forms of bad words
+#,#,#," e.x. would turns things like stp1d into stupid, etc."
+#,#,#,
+#,#,#,
+#,#,#,
+#,#,#,
+#,#,#,
+#,#,#,
+#,#,#,
+#,#,#,
+#,#,#,
+#,#,#,
+fr,for real,1,0
+lmf?ao+,laughing,1,1
+(ha)+,laughing,1,1
+l(ol)+,laughing,1,1
+xd,laughing,1,0
+\/,v,0,0
+f.?ck,fuck,1,1
+f.?cke?r?s?,fuckers,1,1
+f.?ck.?ng?,fucking,1,1
+ppl,people,1,0
+|\|,n,0,0
+n(i|1)gg?a?r?s?,nigger,1,1
+|,i,0,0
+g(\d|e)y,gay,1,1
+fagg?,faggot,1,1
+st1pd,stupid,1,0
