@@ -2,6 +2,7 @@ import pandas as pd
 from tqdm import tqdm
 from constants import REPLACEMENTS_PATH
 import re
+import os
 
 replacements = []
 
@@ -56,6 +57,10 @@ def clean_text(text):
 
     # Replace common contractions with full words
     text = re.sub(r'\bdon ?t\b', 'do not', text)
+    text = re.sub(r'\bdoesn ?t\b', 'does not', text)
+    text = re.sub(r'\bhadn ?t\b', 'had not', text)
+    text = re.sub(r'\bcouldn ?t\b', 'could not', text)
+    text = re.sub(r'\bdidn ?t\b', 'did not', text)
     text = re.sub(r'\bcan ?t\b', 'cannot', text)
     text = re.sub(r'\bain ?t\b', 'is not', text)
     text = re.sub(r'\bwouldn ?t\b', 'would not', text)
@@ -70,7 +75,14 @@ def clean_text(text):
     text = re.sub(r'\bwe re\b', 'we are', text)
     text = re.sub(r'\byou ?re\b', 'you are', text)
     text = re.sub(r'\bwe d\b', 'we would', text)
+    text = re.sub(r'\bthinkin\b', 'thinking', text)
     text = re.sub(r' ll ', ' will ', text)
+
+    # Numbers and Dates
+    text = re.sub(r'\bth\b', '', text)
+    text = re.sub(r'\bst\b', '', text)
+    text = re.sub(r'\bnd\b', '', text)
+    text = re.sub(r'\brd\b', '', text)
 
     # Reply tweet remove
     text = re.sub(r'rtyou', 'you', text)
@@ -86,24 +98,26 @@ def clean_text(text):
 
 if __name__ == '__main__':
     tqdm.pandas()
+    for f in os.listdir('../data/datasets/raw/'):
+        print("Cleaning " + f + "...")
+        data = pd.read_csv(os.path.join('../data/datasets/raw/', f))
 
-    data = pd.read_csv('../data/raw_data.csv')
+        # Remove all entries with empty text fields
+        data = data[data['text'].apply(lambda x: len(str(x)) > 0)]
 
-    # Remove all entries with empty text fields
-    data = data[data['text'].apply(lambda x: len(str(x)) > 0)]
+        # Remove all entries with text fields of 'nan'
+        data = data[data['text'].apply(lambda x: str(x) != 'nan')]
 
-    # Remove all entries with text fields of 'nan'
-    data = data[data['text'].apply(lambda x: str(x) != 'nan')]
+        data['text'] = data['text'].progress_apply(lambda x: twitter_clean(str(x)))
 
-    data['text'] = data['text'].progress_apply(lambda x: twitter_clean(str(x)))
+        data.to_csv(os.path.join('../data/datasets/cleaned/', f), index=False)
 
-    data.to_csv('../data/cleaned_data.csv', index=False)
-
-    print('Data summary')
-    # Print number of offensive and non offensive datapoints
-    # Class 0 is non-offensive, class 1 is offensive
-    print('Offensive:', data[data['class'] == 1].shape[0],
-          "(" + str(round(data[data['class'] == 1].shape[0] / data.shape[0] * 100, 2)) + "%)")
-    print('Non-offensive:', data[data['class'] == 0].shape[0],
-          "(" + str(round(data[data['class'] == 0].shape[0] / data.shape[0] * 100, 2)) + "%)")
-    print('Total:', data.shape[0])
+        print('Data summary for ' + f)
+        # Print number of offensive and non offensive datapoints
+        # Class 0 is non-offensive, class 1 is offensive
+        print('Offensive:', data[data['class'] == 1].shape[0],
+              "(" + str(round(data[data['class'] == 1].shape[0] / data.shape[0] * 100, 2)) + "%)")
+        print('Non-offensive:', data[data['class'] == 0].shape[0],
+              "(" + str(round(data[data['class'] == 0].shape[0] / data.shape[0] * 100, 2)) + "%)")
+        print('Total:', data.shape[0])
+        print('\n--------\n')
