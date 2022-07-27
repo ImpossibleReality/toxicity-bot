@@ -37,7 +37,7 @@ if ip != "":
 
 for s in sensitivities:
     print("Loading data for: " + s)
-    data = pd.read_csv(os.path.join("../data/datasets/cleaned/", s + ".csv"))
+    data = pd.read_csv(os.path.join("../../data/datasets/cleaned/", s + ".csv"))
     train, test = train_test_split(data, test_size=0.2, random_state=5)
 
     train_x = train['text'].astype(str)
@@ -52,7 +52,7 @@ for s in sensitivities:
     print("Fitting BOW model for: " + s)
     count_vectorizer = CountVectorizer(stop_words='english', min_df=0.0001, binary=True)
     train_x = count_vectorizer.fit_transform(train_x)
-    joblib.dump(count_vectorizer, os.path.join("../data/model/", s + "/", "vectorizer.joblib"))
+    joblib.dump(count_vectorizer, os.path.join("../../data/model/", s + "/", "vectorizer.joblib"))
 
     test_x = count_vectorizer.transform(test_x)
 
@@ -61,7 +61,7 @@ for s in sensitivities:
 
     model = LogisticModel(lr, epochs, 0.5)
     model.train(train_x, np.array(train_y), loss_interval=LOSS_PRINT_INTERVAL)
-    joblib.dump(model, os.path.join("../data/model/", s + "/", "model.joblib"))
+    joblib.dump(model, os.path.join("../../data/model/", s + "/", "model.joblib"))
 
     print("Predicting test loss for " + s)
     print("Test loss: " + str(model.loss(test_x, np.array(test_y))))

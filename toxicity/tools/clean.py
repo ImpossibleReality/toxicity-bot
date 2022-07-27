@@ -98,9 +98,9 @@ def clean_text(text):
 
 if __name__ == '__main__':
     tqdm.pandas()
-    for f in os.listdir('../data/datasets/raw/'):
+    for f in os.listdir('../../data/datasets/raw/'):
         print("Cleaning " + f + "...")
-        data = pd.read_csv(os.path.join('../data/datasets/raw/', f))
+        data = pd.read_csv(os.path.join('../../data/datasets/raw/', f))
 
         # Remove all entries with empty text fields
         data = data[data['text'].apply(lambda x: len(str(x)) > 0)]
@@ -110,7 +110,7 @@ if __name__ == '__main__':
 
         data['text'] = data['text'].progress_apply(lambda x: twitter_clean(str(x)))
 
-        data.to_csv(os.path.join('../data/datasets/cleaned/', f), index=False)
+        data.to_csv(os.path.join('../../data/datasets/cleaned/', f), index=False)
 
         print('Data summary for ' + f)
         # Print number of offensive and non offensive datapoints

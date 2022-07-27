@@ -8,7 +8,7 @@ import kaggle as kg
 
 
 
-
+print("Loading data...")
 
 
 
@@ -58,6 +58,8 @@ data4.rename(columns={"label" : "class"}, inplace=True)
 
 
 
+print("Processing data...")
+
 
 dataset = datasets.load_dataset('ucberkeley-dlab/measuring-hate-speech', 'binary')
 df = dataset['train'].to_pandas()[['hatespeech','text']]
@@ -79,8 +81,10 @@ medium = pd.concat([medium, loose[loose['class'] == 1].sample(frac=0.4, random_s
 #for the following models
 
 #loose: df
-loose.to_csv('../data/datasets/raw/loose.csv', index=False)
+loose.to_csv('../../data/datasets/raw/loose.csv', index=False)
 #Medium: data2, data4
-medium.to_csv('../data/datasets/raw/moderate.csv', index=False)
+medium.to_csv('../../data/datasets/raw/moderate.csv', index=False)
 #Strict: data3
-strict.to_csv('../data/datasets/raw/strict.csv', index=False)
+strict.to_csv('../../data/datasets/raw/strict.csv', index=False)
+
+print("Done.")
