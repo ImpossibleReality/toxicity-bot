@@ -25,9 +25,9 @@ class Config():
     # 3: Demo censoring
     #
     # Feedback will be true or false depending on if the server enables feedback
-    def __init__(self, sensitivity: int, feedback: bool):
+    def __init__(self, sensitivity: int, reporting: bool, analytics: bool, feedback_channel):
         self.sensitivity = sensitivity
-        self.feedback = feedback
+        self.reporting = reporting
 
 
 DEFAULT_CONFIG = Config(0, False)
@@ -57,6 +57,6 @@ def set_config(id: int, config: Config):
             '$set': {
                 'guild_id': id,
                 'sensitivity': config.sensitivity,
-                'feedback': config.feedback,
+                'feedback': config.reporting,
             }
         }, True)
