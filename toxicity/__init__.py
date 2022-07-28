@@ -76,20 +76,24 @@ class LogisticModel:
         return self
 
     def pred(self, testX):
-        calc = sigmoid(testX, self.w, self.b)[0][0]
+        calc = sigmoid(testX, self.w, self.b)
         return calc
 
-    def predArr(self, X, Y):
-        arr = np.array()
-        for x in X:
-            calc = self.pred(x)[0][0]
+    def predArr(self, X):
 
+        arr = np.empty(0)
+
+        for i in range(X.shape[0]):
+
+            xi = get_row(X, i)
+
+            calc = self.pred(xi)
             if calc > self.cutoff:
-                arr.add(1)
+                arr = np.append(arr, 1)
             else:
-                arr.add(0)
+                arr = np.append(arr, 0)
 
-        return arr, Y
+        return arr
 
 
 
