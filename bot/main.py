@@ -6,7 +6,7 @@ import os
 from bot import MyClient
 from bot.feedback import create_feedback_poll
 from config_gui import create_config_gui
-from db import connect
+from db import connect, get_config
 import prediction
 
 import discord
@@ -44,6 +44,11 @@ async def config(interaction: discord.Interaction):
 @app_commands.checks.cooldown(1, 600, key=lambda i: (i.guild_id, i.user.id))
 async def flag_msg(interaction: discord.Interaction, message: discord.Message):
     """Flag a Discord message as toxic"""
+    c = get_config(interaction.guild_id)
+    if not c.reporting:
+        await interaction.response.send_message("Flagging is disabled on your server.", ephemeral=True)
+        return
+
     if client.report_message(message.id):
         await create_feedback_poll(message.content, interaction.guild)
     await interaction.response.send_message("Flagged", ephemeral=True)
