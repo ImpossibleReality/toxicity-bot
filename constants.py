@@ -14,3 +14,5 @@ REPLACEMENTS_PATH = os.path.join(ROOT_DIR, 'data/replacements.csv')
 
 MODEL_NAMES = ['loose', 'moderate', 'strict']
 ZMQ_PORT = "6036"
+
+REPORT_THRESHOLD=1

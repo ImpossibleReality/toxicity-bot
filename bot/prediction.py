@@ -2,22 +2,27 @@ import zmq.asyncio
 import logging
 import sys
 from constants import ZMQ_PORT
+import json
 
 try:
     context = zmq.asyncio.Context()
-    print("Connecting to model server...")
+    logging.info("Connecting to model server...")
     socket = context.socket(zmq.DEALER)
     socket.connect("tcp://localhost:" + ZMQ_PORT)
 except ConnectionError:
-    print("You must start the model server in toxicity/main.py")
+    logging.error("You must start the model server in toxicity/main.py")
     sys.exit(1)
 
 
 async def predict_text_prob(model_id: int, text: str):
     await socket.send(b"", zmq.SNDMORE)
     await socket.send_pyobj({"model": model_id, "text": text})
-    await socket.recv()
-    res = await socket.recv_pyobj()
+    res = await socket.recv()
+    try:
+        res = json.loads(res.decode("ascii"))
+    except json.JSONDecodeError:
+        res = await socket.recv()
+        res = json.loads(res.decode("ascii"))
     if res['type'] == 0:
         return res['prob'], res['cutoff']
     else:
