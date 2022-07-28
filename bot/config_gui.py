@@ -27,6 +27,9 @@ class SensitivityDropdown(discord.ui.Select):
                          custom_id="config_select")
 
     async def callback(self, interaction: discord.Interaction):
+        if not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message("You are not an administrator!", ephemeral=True)
+            return
         c = self.config
         if interaction.data['values'][0] in ['0', '1', '2']:
             c.sensitivity = int(interaction.data['values'][0])
@@ -45,6 +48,9 @@ class ReportingButton(discord.ui.Button):
         super().__init__(label=("Disable" if config.reporting else "Enable") + " Reporting")
 
     async def callback(self, interaction: discord.Interaction):
+        if not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message("You are not an administrator!", ephemeral=True)
+            return
         c = self.config
 
         if c.reporting:
@@ -98,6 +104,9 @@ class ChannelDropdown(discord.ui.Select):
                          custom_id="channel_select")
 
     async def callback(self, interaction: discord.Interaction):
+        if not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message("You are not an administrator!", ephemeral=True)
+            return
         c = self.config
         if interaction.data['values'][0] == "None":
             c.feedback_channel = None
