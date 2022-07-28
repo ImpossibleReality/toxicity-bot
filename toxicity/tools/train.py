@@ -1,5 +1,4 @@
 import os
-
 import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
@@ -15,6 +14,8 @@ DEFAULT_EPOCHS = 1000000
 DEFAULT_LR = 0.01
 # How many epochs it takes to print the loss
 LOSS_PRINT_INTERVAL = 250000
+# What the model considers as a 1
+DEFAULT_CUTOFF = 0.5
 
 
 sensitivities=DEFAULT_TRAIN_SENSITIVITY
@@ -31,6 +32,12 @@ if ip != "":
 
 lr = DEFAULT_LR
 print("Enter learning rate")
+ip = input("> ")
+if ip != "":
+    lr = float(ip)
+
+cutoff = DEFAULT_CUTOFF
+print("Enter cutoff probability")
 ip = input("> ")
 if ip != "":
     lr = float(ip)
@@ -56,7 +63,7 @@ for s in sensitivities:
 
     test_x = count_vectorizer.transform(test_x)
 
-    print('Starting training for: ' + s + '\n')
+    print('Starting training for: ' + s)
 
     model = LogisticModel(lr, epochs, 0.5)
     model.train(train_x, np.array(train_y), loss_interval=LOSS_PRINT_INTERVAL)

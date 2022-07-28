@@ -1,7 +1,7 @@
 import joblib
 import os
 from constants import MODEL_NAMES, ZMQ_PORT
-from clean import clean_text
+from clean_api import clean_text
 import zmq
 import signal
 
