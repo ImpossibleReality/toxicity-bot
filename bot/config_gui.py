@@ -12,7 +12,7 @@ class SensitivityDropdown(discord.ui.Select):
                                  default=config.sensitivity == 0, value="0"),
             discord.SelectOption(label='Moderate', description='Flags moderate hate speech and profanity', emoji='🟠',
                                  default=config.sensitivity == 1, value="1"),
-            discord.SelectOption(label='Strict', description='Flags mild profanity and all hate speech', emoji='🔴',
+            discord.SelectOption(label='Demo', description='Flags mild profanity and all hate speech', emoji='🔴',
                                  default=config.sensitivity == 2, value="2"),
         ]
 
