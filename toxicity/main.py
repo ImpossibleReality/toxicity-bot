@@ -4,6 +4,7 @@ from constants import MODEL_NAMES, ZMQ_PORT
 from clean_api import clean_text
 import zmq
 import signal
+import json
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -21,7 +22,7 @@ for m in MODEL_NAMES:
 def predict(model_id: int, text: str):
     text = clean_text(text)
     v = vectorizers[model_id].transform([text])[0][0]
-    return models[model_id].pred(v.toarray()[0])
+    return models[model_id].pred(v.toarray()[0]), models[model_id].cutoff
 
 print("Starting server...")
 context = zmq.Context()
@@ -34,7 +35,7 @@ while True:
     message = socket.recv_pyobj()
     print("Request recieved")
     try:
-        p = predict(message['model'], message['text'])
-        socket.send_pyobj({"type": 0, "prob": p, "cutoff": 0.6})
+        p, c = predict(message['model'], message['text'])
+        socket.send(json.dumps({"type": 0, "prob": p, "cutoff": c}).encode('ascii'))
     except KeyError:
-        socket.send_pyobj({"type": 1, "code": "Missing text argument"})
+        socket.send(json.dumps({"type": 1, "code": "Missing text argument"}).encode('ascii'))

@@ -1,3 +1,5 @@
+import random
+
 import discord
 import logging
 from discord import app_commands
@@ -6,6 +8,9 @@ from db import get_config, Config
 import time
 import os
 import prediction
+from constants import REPORT_THRESHOLD
+from feedback import create_feedback_poll
+
 
 class MyClient(discord.Client):
     def __init__(self, *, intents: discord.Intents):
@@ -14,6 +19,8 @@ class MyClient(discord.Client):
         self.tree = app_commands.CommandTree(self)
         self.tree.add_command(self.group)
         self.server_settings = {}
+        self.votes = {}
+
     async def on_ready(self):
         logging.info('Logged on as {0}!'.format(self.user))
 
@@ -22,9 +29,23 @@ class MyClient(discord.Client):
             if not message.channel.permissions_for(message.author).manage_messages or os.environ.get(
                     "IS_TEST").lower() == "true":
                 pred = await prediction.predict_text(get_config(message.guild.id).sensitivity, message.content)
-                print(pred)
                 if pred:
                     await message.delete()
+                    if random.randint(0, 10) == 0:
+                        await create_feedback_poll(message.content, message.guild)
+
+
+    def report_message(self, msgid: int):
+        try:
+            self.votes[msgid]['count'] += 1
+            self.votes[msgid]['time'] = time.time()
+            if self.votes[msgid]['count'] >= REPORT_THRESHOLD:
+                return True
+        except KeyError:
+            self.votes[msgid] = {
+                'count': 1,
+                'time': time.time()
+            }
 
     def get_config(self, id: int) -> Config:
         try:
@@ -50,3 +71,10 @@ class MyClient(discord.Client):
         for sid in self.server_settings:
             if t - self.server_settings[sid]["time"] > 60 * 20:
                 del self.server_settings[sid]
+
+    @tasks.loop(minutes=5)
+    async def clear_votes(self):
+        t = time.time()
+        for sid in self.votes:
+            if t - self.votes[sid]["time"] > 60 * 20:
+                del self.votes[sid]
