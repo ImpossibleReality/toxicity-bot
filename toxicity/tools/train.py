@@ -14,7 +14,7 @@ DEFAULT_EPOCHS = 1000000
 # Default learning rate if input is empty string
 DEFAULT_LR = 0.01
 # How many epochs it takes to print the loss
-LOSS_PRINT_INTERVAL = 300000
+LOSS_PRINT_INTERVAL = 250000
 
 
 sensitivities=DEFAULT_TRAIN_SENSITIVITY
@@ -56,8 +56,7 @@ for s in sensitivities:
 
     test_x = count_vectorizer.transform(test_x)
 
-    print('Starting training for: ' + s)
-    print()
+    print('Starting training for: ' + s + '\n')
 
     model = LogisticModel(lr, epochs, 0.5)
     model.train(train_x, np.array(train_y), loss_interval=LOSS_PRINT_INTERVAL)

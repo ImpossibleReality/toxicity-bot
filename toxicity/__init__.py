@@ -59,14 +59,16 @@ class LogisticModel:
     def loss(self, X, Y):
         return _loss(X, Y, self.w, self.b)
 
-    def train(self, X, Y, loss_interval=300000):
+    def train(self, X, Y, loss_interval=250000):
         self.w = np.zeros((X.get_shape()[1], 1))
 
         for i in tqdm(range(self.epochs)):
             if i % loss_interval == 0:
                 print("Loss:", self.loss(X, Y))
             self.w, self.b = update_parameters(X, Y, self.w, self.b, self.learningRate)
-
+        
+        print("Loss:", self.loss(X, Y))
+        
         return self
 
     def pred(self, testX):
