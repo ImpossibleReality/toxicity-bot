@@ -1,3 +1,13 @@
+# CSIII Group 3
+# Johan N.
+# Discord Bot, MongoDB, ZMQ Integration, debugging
+# Daniel W.
+# Model and debugging, hyperparameter tuning
+# Rohan D.
+# Math (loss and gradient calculations), data collection and manipulation
+# Final Project
+# Discord bot which detects and removes toxic messages
+
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import joblib
