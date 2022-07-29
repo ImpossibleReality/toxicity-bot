@@ -35,7 +35,7 @@ for m in MODEL_NAMES:
 def predict(model_id: int, text: str):
     text = clean_text(text)
     v = vectorizers[model_id].transform([text])[0][0] # used to create a bag of words
-    return models[model_id].pred(v.toarray()[0]), models[model_id].cutoff #determines if the content should be deleted
+    return models[model_id].pred(v.toarray()[0])[0][0], models[model_id].cutoff #determines if the content should be deleted
 
 # creates and assigns address to socket, print statements for the backend
 print("Starting server...")
