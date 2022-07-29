@@ -31,8 +31,11 @@ async def predict_text_prob(model_id: int, text: str):
     try:
         res = json.loads(res.decode("ascii"))
     except json.JSONDecodeError:
-        res = await socket.recv()
-        res = json.loads(res.decode("ascii"))
+        try:
+            res = await socket.recv()
+            res = json.loads(res.decode("ascii"))
+        except json.JSONDecodeError:
+            return 0.0, 0.5
     if res['type'] == 0:
         return res['prob'], res['cutoff']
     else:

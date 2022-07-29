@@ -36,12 +36,13 @@ class MyClient(discord.Client):
 
     async def on_message(self, message: discord.Message):
         if message.guild is not None:
+            id = message.id
             if not message.channel.permissions_for(message.author).manage_messages or os.environ.get(
                     "IS_TEST").lower() == "true":
                 pred = await prediction.predict_text(get_config(message.guild.id).sensitivity, message.content)
                 if pred:
-                    await message.delete()
-                    if random.randint(0, 10) == 0:
+                    await (await message.channel.fetch_message(id)).delete()
+                    if random.randint(0, 30) == 0:
                         await create_feedback_poll(message.content, message.guild)
 
 

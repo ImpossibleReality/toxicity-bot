@@ -47,4 +47,5 @@ for s in sensitivities:
     cm = confusion_matrix(actual_values, predicted_values)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm)
     disp.plot()
+    plt.title(s.title() + " Model")
     plt.show()
