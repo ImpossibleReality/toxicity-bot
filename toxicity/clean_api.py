@@ -14,6 +14,7 @@ from constants import REPLACEMENTS_PATH
 
 replacements = []
 
+# Turns foul words written in alphanumeric carachters into the full word
 replacement_words = pd.read_csv(REPLACEMENTS_PATH)
 for i, x in replacement_words.iterrows():
     if x['initial'] == '#':
