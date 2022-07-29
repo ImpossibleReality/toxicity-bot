@@ -18,9 +18,12 @@ import json
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
+# setting models and vectorizers to null (for now)
 models = []
 vectorizers = []
 print("Loading models...")
+
+# loads libraries necessary for the bot to use the model
 for m in MODEL_NAMES:
     vectorizer = joblib.load(os.path.join("../data/model/", m + "/", "vectorizer.joblib"))
     model = joblib.load(os.path.join("../data/model/", m + "/", "model.joblib"))
@@ -31,9 +34,10 @@ for m in MODEL_NAMES:
 
 def predict(model_id: int, text: str):
     text = clean_text(text)
-    v = vectorizers[model_id].transform([text])[0][0]
-    return models[model_id].pred(v.toarray()[0]), models[model_id].cutoff
+    v = vectorizers[model_id].transform([text])[0][0] # used to create a bag of words
+    return models[model_id].pred(v.toarray()[0]), models[model_id].cutoff #determines if the content should be deleted
 
+# creates and assigns address to socket, print statements for the backend
 print("Starting server...")
 context = zmq.Context()
 socket = context.socket(zmq.REP)
