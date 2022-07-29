@@ -17,7 +17,7 @@ import os
 client = None
 db = None
 
-
+# Called by main function to connect to the database
 def connect():
     logging.info("Connecting to db...")
     global client, db
@@ -45,7 +45,7 @@ class Config():
 
 DEFAULT_CONFIG = Config(0, False, False, None)
 
-
+# Get config object from guild (server) id
 def get_config(id: int):
     if db is None:
         raise Exception("DB not connected")
@@ -59,7 +59,7 @@ def get_config(id: int):
     else:
         return DEFAULT_CONFIG
 
-
+# Set the config object for a guild id
 def set_config(id: int, config: Config):
     if db is None:
         raise Exception("DB not connected")
@@ -76,7 +76,7 @@ def set_config(id: int, config: Config):
             }
         }, True)
 
-
+# Create a feedback submission from a guild, message, model name, and id
 def create_feedback(guild_id: int, message: str, model: int, msg_id: int):
     return db.feedback.insert_one({
         "guild": guild_id,
@@ -91,6 +91,7 @@ def create_feedback(guild_id: int, message: str, model: int, msg_id: int):
         }
     })
 
+# Test if a user has voted on a poll
 def has_voted(msgid: int, voter: int):
     x = db.feedback.find_one({
         'vmessage_id': msgid
@@ -98,6 +99,7 @@ def has_voted(msgid: int, voter: int):
 
     return voter in x['voters']
 
+# Update feedback counts for a poll
 def update_feedback_counts(msgid: int, is_good: bool, voter: int):
     db.feedback.update_one({
         'vmessage_id': msgid

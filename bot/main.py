@@ -23,15 +23,20 @@ import discord
 from discord import app_commands
 from dotenv import load_dotenv
 
+# Use colored logging because it looks better
 coloredlogs.install()
 
+# Load env vars from .env file
 load_dotenv()
 
+# Create custom client from __init__.py file
 intents = discord.Intents.default()
 intents.message_content = True
 client = MyClient(intents=intents)
 
 
+# Debug command which returns the probability and cutoff of a message being flagged
+# Using the server's model
 @client.group.command()
 @app_commands.describe(
     message="Message to return probability for"
@@ -41,7 +46,7 @@ async def probability(interaction: discord.Interaction, message: str):
     prob = await prediction.predict_text_prob(interaction.client.get_config(interaction.guild_id).sensitivity, message)
     await interaction.response.send_message("Probability: " + str(prob), ephemeral=True)
 
-
+# Command which allows for configuring of the bot
 @client.group.command()
 async def config(interaction: discord.Interaction):
     """Configure Toxicity Bot"""
@@ -49,7 +54,7 @@ async def config(interaction: discord.Interaction):
     await interaction.response.send_message(embed=e, view=v)
     v.message = await interaction.original_message()
 
-
+# Context menu command to report a message
 @client.tree.context_menu(name="Flag as toxic")
 @app_commands.checks.cooldown(1, 600, key=lambda i: (i.guild_id, i.user.id))
 async def flag_msg(interaction: discord.Interaction, message: discord.Message):
@@ -63,14 +68,16 @@ async def flag_msg(interaction: discord.Interaction, message: discord.Message):
         await create_feedback_poll(message.content, interaction.guild)
     await interaction.response.send_message("Flagged", ephemeral=True)
 
-
+# Function to be called when the user is on cooldown for the reporting feature
 @flag_msg.error
 async def on_test_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
     if isinstance(error, app_commands.CommandOnCooldown):
         await interaction.response.send_message("You cannot flag messages this fast.", ephemeral=True)
 
-
-connect()
+# Connect to DB
 logging.info("Connected to DB.")
+connect()
+
+# Connect to Discord and run the bot
 logging.info("Connecting to discord...")
 client.run(os.environ.get("BOT_TOKEN"), log_handler=None)
