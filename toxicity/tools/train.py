@@ -28,6 +28,7 @@ LOSS_PRINT_INTERVAL = 250000
 DEFAULT_CUTOFF = 0.5
 
 
+#Allow for user-specific hyperparameters during training
 sensitivities=DEFAULT_TRAIN_SENSITIVITY
 print("Enter sensitivites to train (ie loose, moderate, strict) separated by comma")
 ip = input("> ")
@@ -52,6 +53,7 @@ ip = input("> ")
 if ip != "":
     lr = float(ip)
 
+# Training the model
 for s in sensitivities:
     print("Loading data for: " + s)
     data = pd.read_csv(os.path.join("../../data/datasets/cleaned/", s + ".csv"))
