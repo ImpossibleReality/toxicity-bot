@@ -8,15 +8,16 @@
 # Final Project
 # Discord bot which detects and removes toxic messages
 
-#This file simply takes user generated words in and outputs a bag of words model
+
 import joblib
 import os
 
+# Loads model and corresponding vectorizer
 model = input("Enter model name to load: ")
 vectorizer = joblib.load(os.path.join("../../data/model/", model + "/", "vectorizer.joblib"))
 model = joblib.load(os.path.join("../../data/model/", model + "/", "model.joblib"))
 
-
+# Allows us to test model predictions in the console
 ip = " "
 while ip != "":
     ip = input("Enter text to predict: ")
