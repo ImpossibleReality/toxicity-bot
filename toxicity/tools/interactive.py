@@ -8,6 +8,7 @@
 # Final Project
 # Discord bot which detects and removes toxic messages
 
+#This file simply takes user generated words in and outputs a bag of words model
 import joblib
 import os
 
