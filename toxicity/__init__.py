@@ -71,7 +71,7 @@ class LogisticModel:
         for i in tqdm(range(1, self.epochs + 1)):  # tqdm used to display progress bar
             if i % loss_interval == 0:
                 print("Loss:", self.log_likelihood(X, Y))
-                self.update_parameters(X, Y)
+            self.update_parameters(X, Y)
 
         return self
 
